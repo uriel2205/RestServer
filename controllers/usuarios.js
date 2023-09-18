@@ -15,34 +15,36 @@ const usuariosGet =(req,res = response) =>{
     });
 }
 
-const usuariosPost = async(req = request,res = response) =>{
-    
-    const {nombre, correo, password, rol} = req.body;
-    const usuario = new Usuario({nombre, correo, password,rol});
 
-    //Verificar si el correo existe
-    const existeEmail = await Usuario.findOne({ correo });
-    if( existeEmail ){
-        return res.status(400).json({
-            msg: 'El correo ya esta registrado'
-        });
-    }
-    // Encriptar la contrasena
+const usuariosPost = async(req, res = response) => {
+    
+    const { nombre, correo, password, rol } = req.body;
+    const usuario = new Usuario({ nombre, correo, password, rol });
+
+    // Encriptar la contraseña
     const salt = bcryptjs.genSaltSync();
-    usuario.password = bcryptjs.hashSync( password, salt )
-    // Guardar en DB
+    usuario.password = bcryptjs.hashSync( password, salt );
+
+    // Guardar en BD
     await usuario.save();
-    delete usuario.password;
 
     res.json({
         usuario
-        
     });
 }
 
-const usuariosPut = (req,res = response) =>{ 
+const usuariosPut = async(req,res = response) =>{ 
 
-    const id = req.params;
+    const {id} = req.params;
+    const {password, google, correo, ...resto} =req.body;
+
+    //TODO validar contra base de datos
+    if( password ) {
+        // Encriptar la contrasena
+        const salt = bcryptjs.genSaltSync();
+        resto.password = bcryptjs.hashSync( password, salt )
+    }
+    const usuario = await Usuario.findByIdAndUpdate(id, resto);
 
     res.json({
     msg: 'put API controlador',
