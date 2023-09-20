@@ -14,11 +14,13 @@ const existeEmail = await Usuario.findOne({ correo });
            throw new Error(`El correo ${correo}, ya esta registrado en la BD`)
     }
 }
-const existeUsuarioPorId = async ( id) =>{
-    const existeUsuario = await Usuario.findById({ correo });
-        if( !existeUsuario ){
-               throw new Error(`El id no existe ${id}`)
-        }
+const existeUsuarioPorId = async( id ) => {
+
+    // Verificar si el correo existe
+    const existeUsuario = await Usuario.findById(id);
+    if ( !existeUsuario ) {
+        throw new Error(`El id no existe ${ id }`);
     }
+}
 
 module.exports = {esRoleValido, emailExiste, existeUsuarioPorId}
